@@ -1,0 +1,44 @@
+spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: email
+    password: password
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          socketFactory:
+            port: 465
+            class: javax.net.ssl.SSLSocketFactory
+            fallback: false
+          auth: true
+          starttls:
+            enable: true
+          connectiontimeout: 5000
+          timeout: 3000
+          whitetimeout: 5000
+  thymeleaf:
+    enable: true
+
+
+email:
+  sender:
+    from: email
+  send:
+    nameFrom: "Ney"
+server:
+  port: 8084
+
+
+
+
+
+
+
+
+
+
+
+
+
