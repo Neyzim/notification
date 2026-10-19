@@ -1,7 +1,10 @@
 package com.ney.notification.bussiness;
 
 import com.ney.notification.bussiness.dto.TaskDto;
+import com.ney.notification.bussiness.dto.TaskStatusDto;
+import com.ney.notification.bussiness.enums.NotificationStatusEnum;
 import com.ney.notification.infrastructure.exception.EmailException;
+import com.ney.notification.infrastructure.messages.kafka.producer.KafkaProducerConfig;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.AddressException;
 import jakarta.mail.internet.InternetAddress;
@@ -24,6 +27,7 @@ public class EmailService {
 
     private final JavaMailSender javaMailSender;
     private final TemplateEngine templateEngine;
+    private final KafkaProducerConfig kafkaProducerConfig;
 
     @Value("${email.sender.from}")
     public String from;
@@ -46,8 +50,18 @@ public class EmailService {
             helper.setText(content, true);
             javaMailSender.send(message);
 
+            kafkaProducerConfig.sendTaskStatus(taskDto.getId(), NotificationStatusEnum.NOTIFIED);
+
         } catch (MessagingException | UnsupportedEncodingException e) {
             throw new EmailException("Erro ao enviar o Email, " + e.getCause());
         }
+    }
+
+    private TaskStatusDto buildStatus(String id, NotificationStatusEnum status){
+        return TaskStatusDto.builder()
+                    .id(id)
+                    .notificationStatusEnum(status)
+                .build();
+
     }
 }
